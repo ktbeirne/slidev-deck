@@ -1,0 +1,66 @@
+/* フレームプリセット（ヘッダ・フッタ装飾）。色はtheme.cssのトークンを消費するだけなので、どのパレットでも成立する。デッキごとに1プリセットを選ぶ。 */
+
+.slide-frame { position: relative; }
+.sd-frame { position: absolute; inset: 0; pointer-events: none; } /* Slidevオーバーレイ用 */
+.sf-frame-footer {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 14px 48px;
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: var(--text-xs); opacity: .65;
+}
+
+/* frame-none: 何も描画しない。余白のみ。ミニマル */
+.frame-none {}
+
+/* frame-topline: 上端に細いライン */
+.frame-topline::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  width: 100%; height: 4px;
+  background: var(--brand-primary);
+}
+
+/* frame-band: 上端に太い帯、下端に細い帯 */
+.frame-band::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  width: 100%; height: 20px;
+  background: var(--brand-primary);
+}
+.frame-band::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  width: 100%; height: 6px;
+  background: var(--brand-primary-dark);
+}
+/* 下端の帯とフッタが重ならないよう底上げする */
+.frame-band .sf-frame-footer { bottom: 6px; }
+
+/* frame-sideline: 左端に縦帯 */
+.frame-sideline::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  height: 100%; width: 10px;
+  background: var(--brand-primary);
+}
+
+/* frame-titlebar: ヘッダ帯にスライド見出しを収める（pptxテンプレート型）。
+   唯一レイアウトと連動するプリセット: 見出しスロットが本文側からフレーム側へ移り、
+   見出し文字色は --heading-color ではなく --text-inverse になる。
+   本文側は帯の高さぶん上余白を確保すること（Slidev実装時はレイアウトが担う）。 */
+.sf-frame-titlebar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 88px;
+  background: var(--brand-primary);
+  color: var(--text-inverse);
+  display: flex; align-items: center;
+  padding: 0 64px;
+  font-family: var(--font-title);
+  font-size: var(--text-xl);
+  font-weight: 700;
+}

@@ -1,0 +1,21 @@
+/* ===== 候補C: ダーク×インディゴ =====
+   狙い: 登壇・スクリーン投影向け。暗室で眩しくない。
+   注意: 印刷・回覧資料には不向き（deckMode: reading では非推奨）。 */
+:root {
+  --candidate-label: "ダーク×インディゴ";
+  --brand-primary: #8B93FF;      /* 主張色: 強調・アクセント */
+  --brand-primary-dark: #6A72E8; /* primary の濃色（縁取り・強い強調） */
+  --heading-color: #A8AEFF;      /* 見出し文字色 */
+  --text-color: #E7E9EE;         /* 本文基準色 */
+  --text-inverse: #171A21;       /* 濃色背景上の文字色（ダークでは反転して暗色） */
+  --surface: #171A21;            /* スライド背景 */
+  --surface-alt: #21252E;        /* カード・パネル背景 */
+  --border-color: #3A4150;       /* 罫線 */
+  --accent-info: #5FB0F0;        /* 系統色: 情報（明度を上げて視認性確保） */
+  --accent-warn: #F0A63C;        /* 系統色: 注意 */
+  --accent-success: #57B98A;     /* 系統色: 成功 */
+  --accent-neutral: #9AA2AF;     /* 系統色: 中立 */
+  --font-body: "Noto Sans JP", "Yu Gothic", "Meiryo", sans-serif;
+  --font-title: "BIZ UDPGothic", "Yu Gothic", "Meiryo", sans-serif;
+  --font-mono: "JetBrains Mono", Consolas, monospace;
+}

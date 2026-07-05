@@ -1,0 +1,21 @@
+/* ===== 現在選択中のパレット（themes/candidate-a.css のコピー） =====
+   ユーザが specimen.html で候補を承認したら、選ばれた候補をこのファイルへコピーする。
+   デッキ本体（Slidev）はこのファイルだけを参照する。 */
+:root {
+  --candidate-label: "インディゴ";
+  --brand-primary: #4F46E5;      /* 主張色: 強調・アクセント */
+  --brand-primary-dark: #3730A3; /* primary の濃色（縁取り・強い強調） */
+  --heading-color: #312E81;      /* 見出し文字色 */
+  --text-color: #1F2430;         /* 本文基準色 */
+  --text-inverse: #FFFFFF;       /* 濃色背景上の文字色 */
+  --surface: #FFFFFF;            /* スライド背景 */
+  --surface-alt: #F4F5FA;        /* カード・パネル背景 */
+  --border-color: #DCDFE8;       /* 罫線 */
+  --accent-info: #2563EB;        /* 系統色: 情報 */
+  --accent-warn: #B45309;        /* 系統色: 注意（白背景での可読性優先で濃いめ） */
+  --accent-success: #047857;     /* 系統色: 成功 */
+  --accent-neutral: #6B7280;     /* 系統色: 中立 */
+  --font-body: "Noto Sans JP", "Yu Gothic", "Meiryo", sans-serif;
+  --font-title: "BIZ UDPGothic", "Yu Gothic", "Meiryo", sans-serif;
+  --font-mono: "JetBrains Mono", Consolas, monospace;
+}

@@ -1,0 +1,23 @@
+{
+  "name": "slidev-deck-template",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "slidev --open",
+    "build": "slidev build",
+    "export": "slidev export",
+    "export:png": "slidev export --format png",
+    "lint": "node scripts/lint-deck.mjs slides.md",
+    "export:pptx": "slidev export --format pptx",
+    "export:pdf": "slidev export --format pdf"
+  },
+  "dependencies": {
+    "@slidev/cli": "^52.0.0",
+    "@slidev/theme-default": "latest",
+    "vue": "^3.4.0"
+  },
+  "devDependencies": {
+    "@iconify-json/mdi": "^1.2.3",
+    "playwright-chromium": "^1.61.1"
+  }
+}

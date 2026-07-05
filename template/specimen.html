@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Design Token Specimen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=BIZ+UDPGothic:wght@400;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<!-- トークンの正は theme.css / style.css。このページはそれを読んで描画するだけの固定ビューア -->
+<link id="theme-link" rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="frames.css">
+<style>
+  /* ===== ビューア自身の骨格（トークンを消費して描画する） ===== */
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--surface);
+    color: var(--text-color);
+    font-family: var(--font-body);
+    padding: 32px 48px 80px;
+    max-width: 1360px;
+    transition: background .2s;
+  }
+  header { display: flex; align-items: baseline; gap: var(--space-5); flex-wrap: wrap; margin-bottom: var(--space-6); }
+  h1 { font-family: var(--font-title); color: var(--heading-color); font-size: var(--text-xl); margin: 0; }
+  h2 {
+    font-family: var(--font-title); color: var(--heading-color); font-size: var(--text-l);
+    margin: 56px 0 16px; padding-bottom: 6px; border-bottom: 1px solid var(--border-color);
+  }
+  .note { opacity: .65; font-size: var(--text-xs); }
+  code, .mono { font-family: var(--font-mono); font-size: .9em; }
+
+  /* 候補スイッチャ */
+  .switcher { display: flex; gap: var(--space-2); }
+  .switcher button {
+    font: inherit; font-size: var(--text-xs); font-weight: 700; cursor: pointer;
+    padding: 6px 16px; border-radius: var(--radius-pill);
+    border: 1px solid var(--border-color); background: var(--surface-alt); color: var(--text-color);
+  }
+  .switcher button.active { background: var(--brand-primary); border-color: var(--brand-primary); color: var(--text-inverse); }
+
+  /* パレット */
+  .swatches { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-3); }
+  .swatch { border: 1px solid var(--border-color); border-radius: var(--radius-m); overflow: hidden; }
+  .swatch .chip { height: 64px; border-bottom: 1px solid var(--border-color); }
+  .swatch .meta { padding: var(--space-2) var(--space-3); font-size: var(--text-xs); line-height: 1.6; background: var(--surface-alt); }
+  .swatch .meta .hex { opacity: .7; }
+
+  /* コントラスト表 */
+  table.contrast { border-collapse: collapse; width: 100%; font-size: var(--text-s); }
+  table.contrast th, table.contrast td { text-align: left; padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--border-color); }
+  table.contrast th { background: var(--surface-alt); }
+  .pair-sample { display: inline-block; padding: 2px 14px; border-radius: var(--radius-s); font-weight: 700; }
+  .pass { color: var(--accent-success); font-weight: 700; }
+  .fail { color: var(--accent-warn); font-weight: 700; }
+
+  /* タイポグラフィ */
+  .type-row { display: flex; align-items: baseline; gap: var(--space-4); border-bottom: 1px dashed var(--border-color); padding: var(--space-2) 0; }
+  .type-label { width: 200px; flex: none; font-size: var(--text-xs); opacity: .7; font-family: var(--font-mono); }
+  .voice-demo { margin-top: var(--space-4); max-width: 900px; }
+
+  /* 余白・角丸・影 */
+  .scale-row { display: flex; align-items: center; gap: var(--space-4); margin: var(--space-2) 0; font-size: var(--text-xs); }
+  .scale-row .bar { background: var(--brand-primary); height: 14px; border-radius: 2px; }
+  .scale-row .lbl { width: 160px; flex: none; font-family: var(--font-mono); opacity: .7; }
+  .box-row { display: flex; gap: var(--space-5); margin-top: var(--space-3); }
+  .demo-box {
+    width: 150px; height: 84px; background: var(--surface-alt); border: 1px solid var(--border-color);
+    display: flex; align-items: center; justify-content: center; font-size: var(--text-xs);
+  }
+
+  /* 疑似スライド（1280x720 で組んで 0.45 縮小表示。2枚横並びを維持できる幅） */
+  .slide-holder { width: 578px; height: 326px; overflow: hidden; border: 1px solid var(--border-color); box-shadow: var(--shadow-2); }
+  .slide-frame { width: 1280px; height: 720px; transform: scale(.45); transform-origin: top left; background: var(--surface); }
+  .slides-row { display: flex; gap: var(--space-5); flex-wrap: wrap; }
+
+  .sf-cover { height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 0 96px; gap: 20px; }
+  .sf-kicker { font-size: var(--text-m); color: var(--brand-primary); font-weight: 700; }
+  .sf-title { font-family: var(--font-title); font-size: var(--text-display); color: var(--heading-color); line-height: 1.35; margin: 0; }
+  .sf-meta { font-size: var(--text-s); opacity: .65; }
+
+  .sf-content { height: 100%; padding: 48px 64px; display: flex; flex-direction: column; }
+  .sf-heading { font-family: var(--font-title); font-size: var(--text-xl); color: var(--heading-color); margin: 0 0 20px; }
+  .sf-grid { display: grid; grid-template-columns: 7fr 5fr; gap: 40px; margin-top: 28px; flex: 1; }
+  .sf-keynumber { text-align: center; align-self: center; }
+  .sf-keynumber .num { font-size: 5.5rem; font-weight: 700; color: var(--brand-primary); line-height: 1.1; font-family: var(--font-title); }
+  .sf-keynumber .lbl { font-size: var(--text-m); font-weight: 700; }
+  .sf-badges { display: flex; gap: 10px; margin-top: 20px; justify-content: center; }
+  .sf-badge { display: inline-block; padding: 3px 16px; border-radius: var(--radius-pill); font-size: var(--text-xs); font-weight: 700; color: var(--text-inverse); }
+  .sf-foot { margin-top: auto; }
+
+  .frames-grid { display: grid; grid-template-columns: repeat(2, auto); gap: var(--space-5); justify-content: start; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>デザイントークン仕様書</h1>
+  <div class="switcher" id="switcher"></div>
+  <span class="note">表示中: <code id="current-file">theme.css</code> ｜ このページは theme.css / style.css をそのまま読み込んで描画している。値の修正はCSS編集＋リロードで反映</span>
+</header>
+
+<h2>1. カラーパレット</h2>
+<div class="swatches" id="swatches"></div>
+
+<h2>2. コントラスト検査（WCAG相当・機械判定）</h2>
+<p class="note">本文・バッジ等の小さい文字は 4.5 以上、図形・大文字は 3.0 以上を合格とする。</p>
+<table class="contrast">
+  <thead><tr><th>用途</th><th>前景 / 背景</th><th>見本</th><th>比</th><th>基準</th><th>判定</th></tr></thead>
+  <tbody id="contrast-body"></tbody>
+</table>
+
+<h2>3. タイポグラフィ</h2>
+<p class="note">本文: <span id="font-body-name" class="mono"></span> ／ 見出し: <span id="font-title-name" class="mono"></span> ／ 等幅: <span class="mono" style="font-family:var(--font-mono)">JetBrains Mono 0123 const x = 42;</span></p>
+<div id="type-rows"></div>
+<div class="voice-demo card">
+  <div style="font-size: var(--text-xs); opacity:.7; margin-bottom: 8px;">声量3段の見本（主張 &gt; 根拠 &gt; 補足）＋強調・減衰</div>
+  <div class="takeaway">結論の一文はこの声量で置く。<span class="accent">最重要語</span>だけを強調する</div>
+  <div style="font-size: var(--text-m); margin-top: 8px;">根拠となる本文はこのサイズ。読み上げず、見て理解できる長さに保つ。</div>
+  <div class="dim" style="margin-top: 4px;">補足・出典・注記はこの声量まで落とす。読まなくても主張は成立する。</div>
+</div>
+
+<h2>4. 余白・角丸・影</h2>
+<div id="space-rows"></div>
+<div class="box-row">
+  <div class="demo-box" style="border-radius: var(--radius-s);">radius-s</div>
+  <div class="demo-box" style="border-radius: var(--radius-m);">radius-m</div>
+  <div class="demo-box" style="border-radius: var(--radius-l);">radius-l</div>
+</div>
+<div class="box-row">
+  <div class="demo-box" style="box-shadow: var(--shadow-1); border: none;">shadow-1</div>
+  <div class="demo-box" style="box-shadow: var(--shadow-2); border: none;">shadow-2</div>
+  <div class="demo-box" style="box-shadow: var(--shadow-3); border: none;">shadow-3</div>
+</div>
+
+<h2>5. 疑似スライド（印象確認用）</h2>
+<p class="note">これは近似プレビュー。実寸・改行位置・フォント描画の最終確認は Slidev 実レンダで行う（Scaffold後の初回レンダがチェックポイント）。</p>
+<div class="slides-row">
+  <div class="slide-holder"><div class="slide-frame">
+    <div class="sf-cover">
+      <div class="sf-kicker">社内勉強会</div>
+      <h1 class="sf-title">デザイントークンは<br>デッキ実装の前に合意する</h1>
+      <div class="sf-meta">2026-07-03 ・ 発表者名</div>
+    </div>
+  </div></div>
+  <div class="slide-holder"><div class="slide-frame">
+    <div class="sf-content">
+      <h2 class="sf-heading" style="border:none; margin-top:0; padding:0;">色を後から直すと全スライドに波及する</h2>
+      <div class="takeaway">トークンを先に固定すれば、<span class="accent">手戻りゼロ</span>で見た目を差し替えられる</div>
+      <div class="sf-grid">
+        <div>
+          <table class="sd-table" style="font-size: var(--text-s);">
+            <thead><tr><th>工程</th><th>色の直書き</th><th>トークン経由</th></tr></thead>
+            <tbody>
+              <tr><td>初回実装</td><td>速い</td><td>同等</td></tr>
+              <tr><td>配色変更</td><td>全枚修正</td><td>1ファイル</td></tr>
+              <tr><td>ダーク対応</td><td>作り直し</td><td>差し替えのみ</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="sf-keynumber">
+          <div class="num">1</div>
+          <div class="lbl">変更箇所は常に1ファイル</div>
+          <div class="sf-badges">
+            <span class="sf-badge" style="background: var(--accent-info);">情報</span>
+            <span class="sf-badge" style="background: var(--accent-warn);">注意</span>
+            <span class="sf-badge" style="background: var(--accent-success);">成功</span>
+            <span class="sf-badge" style="background: var(--accent-neutral);">中立</span>
+          </div>
+        </div>
+      </div>
+      <div class="dim sf-foot">出典・注記はこの声量。ページ下端の余白はこの程度に収める</div>
+    </div>
+  </div></div>
+</div>
+
+<h2>6. フレームプリセット（ヘッダ・フッタ）</h2>
+<p class="note">デッキごとに1つ選ぶ。色はパレットのトークンを消費するだけなので、候補を切り替えても成立する。</p>
+<div class="frames-grid">
+  <div>
+    <div class="slide-holder"><div class="slide-frame frame-none">
+      <div class="sf-content">
+        <h2 class="sf-heading" style="border:none; margin-top:0; padding:0;">フレームは色トークンを消費するだけ</h2>
+        <div class="takeaway">パレットを差し替えても<span class="accent">フレームは追従</span>する</div>
+        <div class="dim" style="margin-top: 24px;">本文領域。フレームとの余白の取り合いをここで確認する</div>
+      </div>
+      <div class="sf-frame-footer"><span>デッキタイトル</span><span>12</span></div>
+    </div></div>
+    <p class="note" style="margin:4px 0 0;">frame-none — 余白のみ</p>
+  </div>
+  <div>
+    <div class="slide-holder"><div class="slide-frame frame-topline">
+      <div class="sf-content">
+        <h2 class="sf-heading" style="border:none; margin-top:0; padding:0;">フレームは色トークンを消費するだけ</h2>
+        <div class="takeaway">パレットを差し替えても<span class="accent">フレームは追従</span>する</div>
+        <div class="dim" style="margin-top: 24px;">本文領域。フレームとの余白の取り合いをここで確認する</div>
+      </div>
+      <div class="sf-frame-footer"><span>デッキタイトル</span><span>12</span></div>
+    </div></div>
+    <p class="note" style="margin:4px 0 0;">frame-topline — 上端ライン</p>
+  </div>
+  <div>
+    <div class="slide-holder"><div class="slide-frame frame-band">
+      <div class="sf-content">
+        <h2 class="sf-heading" style="border:none; margin-top:0; padding:0;">フレームは色トークンを消費するだけ</h2>
+        <div class="takeaway">パレットを差し替えても<span class="accent">フレームは追従</span>する</div>
+        <div class="dim" style="margin-top: 24px;">本文領域。フレームとの余白の取り合いをここで確認する</div>
+      </div>
+      <div class="sf-frame-footer"><span>デッキタイトル</span><span>12</span></div>
+    </div></div>
+    <p class="note" style="margin:4px 0 0;">frame-band — 上下帯</p>
+  </div>
+  <div>
+    <div class="slide-holder"><div class="slide-frame frame-sideline">
+      <div class="sf-content">
+        <h2 class="sf-heading" style="border:none; margin-top:0; padding:0;">フレームは色トークンを消費するだけ</h2>
+        <div class="takeaway">パレットを差し替えても<span class="accent">フレームは追従</span>する</div>
+        <div class="dim" style="margin-top: 24px;">本文領域。フレームとの余白の取り合いをここで確認する</div>
+      </div>
+      <div class="sf-frame-footer"><span>デッキタイトル</span><span>12</span></div>
+    </div></div>
+    <p class="note" style="margin:4px 0 0;">frame-sideline — 左縦帯</p>
+  </div>
+  <div>
+    <div class="slide-holder"><div class="slide-frame frame-titlebar">
+      <div class="sf-frame-titlebar">フレームは色トークンを消費するだけ</div>
+      <div class="sf-content" style="padding-top: 128px;">
+        <div class="takeaway">パレットを差し替えても<span class="accent">フレームは追従</span>する</div>
+        <div class="dim" style="margin-top: 24px;">本文領域。帯の高さぶん上余白を確保する（この余白はレイアウト側の責務）</div>
+      </div>
+      <div class="sf-frame-footer"><span>デッキタイトル</span><span>12</span></div>
+    </div></div>
+    <p class="note" style="margin:4px 0 0;">frame-titlebar — ヘッダ帯に見出し（見出し文字は反転色）</p>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* ?theme=themes/candidate-c.css で候補を直接表示できる（headless スクショ用） */
+const initialTheme = new URLSearchParams(location.search).get('theme');
+if (initialTheme) {
+  const link = document.getElementById('theme-link');
+  link.onload = () => { renderAll(); showCurrent(initialTheme); }; /* 差し替えCSSのロード完了後に数値を再計算（関数は巻き上げで参照可） */
+  link.href = initialTheme;
+  document.getElementById('current-file').textContent = initialTheme;
+}
+
+/* 候補の呼び名は固定ビューア側に書かない（候補はデッキ毎に生成される成果物であり、
+   ここに書くと実体と乖離する）。タブは中立ラベル固定。候補CSSが任意で
+   --candidate-label: "呼び名" を定義していれば、選択時に「表示中」行へ表示する。
+   存在しない候補ファイルのタブは link プローブで自動的に消す（file:// でも動く）。 */
+const CANDIDATES = [
+  { file: 'theme.css', label: '現在のtheme.css' },
+  { file: 'themes/candidate-a.css', label: '候補A' },
+  { file: 'themes/candidate-b.css', label: '候補B' },
+  { file: 'themes/candidate-c.css', label: '候補C' },
+  { file: 'themes/candidate-d.css', label: '候補D' },
+];
+
+function showCurrent(file) {
+  const label = getComputedStyle(document.documentElement)
+    .getPropertyValue('--candidate-label').trim().replace(/^["']|["']$/g, '');
+  document.getElementById('current-file').textContent = label ? `${file}（${label}）` : file;
+}
+
+const COLOR_VARS = [
+  ['--brand-primary', '主張色・強調'],
+  ['--brand-primary-dark', 'primaryの濃色'],
+  ['--heading-color', '見出し文字'],
+  ['--text-color', '本文文字'],
+  ['--text-inverse', '濃色上の文字'],
+  ['--surface', 'スライド背景'],
+  ['--surface-alt', 'カード背景'],
+  ['--border-color', '罫線'],
+  ['--accent-info', '系統色: 情報'],
+  ['--accent-warn', '系統色: 注意'],
+  ['--accent-success', '系統色: 成功'],
+  ['--accent-neutral', '系統色: 中立'],
+];
+
+const TYPE_VARS = ['--text-xs', '--text-s', '--text-m', '--text-l', '--text-xl', '--text-display'];
+const SPACE_VARS = ['--space-1', '--space-2', '--space-3', '--space-4', '--space-5', '--space-6'];
+
+/* var() を実際に描画させて RGB を得る（hex/rgb/名前どの表記でも解決できる） */
+const probe = document.createElement('span');
+probe.style.display = 'none';
+document.body.appendChild(probe);
+
+function resolveColor(varName) {
+  probe.style.color = 'rgb(0 0 0)';
+  probe.style.color = `var(${varName})`;
+  const m = getComputedStyle(probe).color.match(/[\d.]+/g);
+  return m ? m.slice(0, 3).map(Number) : [0, 0, 0];
+}
+function toHex([r, g, b]) {
+  return '#' + [r, g, b].map(v => Math.round(v).toString(16).padStart(2, '0').toUpperCase()).join('');
+}
+function luminance([r, g, b]) {
+  const f = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+  return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+}
+function ratio(c1, c2) {
+  const [l1, l2] = [luminance(c1), luminance(c2)].sort((a, b) => b - a);
+  return (l1 + 0.05) / (l2 + 0.05);
+}
+function blend(fg, bg, alpha) {
+  return fg.map((v, i) => alpha * v + (1 - alpha) * bg[i]);
+}
+function cssVal(varName) {
+  return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+}
+
+function renderSwatches() {
+  document.getElementById('swatches').innerHTML = COLOR_VARS.map(([v, role]) => {
+    const hex = toHex(resolveColor(v));
+    return `<div class="swatch">
+      <div class="chip" style="background: var(${v});"></div>
+      <div class="meta"><span class="mono">${v}</span><br>${role} <span class="hex mono">${hex}</span></div>
+    </div>`;
+  }).join('');
+}
+
+function renderContrast() {
+  const S = resolveColor('--surface');
+  const T = resolveColor('--text-color');
+  /* [用途, 前景var, 背景var, 基準, 前景色の上書き(任意)] */
+  const rows = [
+    ['本文', '--text-color', '--surface', 4.5],
+    ['本文（カード上）', '--text-color', '--surface-alt', 4.5],
+    ['補足（dim: 本文を65%減衰）', '--text-color', '--surface', 4.5, blend(T, S, 0.65)],
+    ['見出し', '--heading-color', '--surface', 4.5],
+    ['強調語（accent）', '--brand-primary', '--surface', 4.5],
+    ['反転文字 / primary', '--text-inverse', '--brand-primary', 4.5],
+    ['バッジ文字 / info', '--text-inverse', '--accent-info', 4.5],
+    ['バッジ文字 / warn', '--text-inverse', '--accent-warn', 4.5],
+    ['バッジ文字 / success', '--text-inverse', '--accent-success', 4.5],
+    ['バッジ文字 / neutral', '--text-inverse', '--accent-neutral', 4.5],
+    ['図形: info / 背景', '--accent-info', '--surface', 3],
+    ['図形: warn / 背景', '--accent-warn', '--surface', 3],
+    ['図形: success / 背景', '--accent-success', '--surface', 3],
+    ['罫線 / 背景', '--border-color', '--surface', 1.3],
+  ];
+  document.getElementById('contrast-body').innerHTML = rows.map(([label, fgVar, bgVar, threshold, fgOverride]) => {
+    const fg = fgOverride || resolveColor(fgVar);
+    const bg = resolveColor(bgVar);
+    const r = ratio(fg, bg);
+    const ok = r >= threshold;
+    return `<tr>
+      <td>${label}</td>
+      <td class="mono" style="font-size:.8em">${fgVar} / ${bgVar}</td>
+      <td><span class="pair-sample" style="color:${toHex(fg)}; background:${toHex(bg)}; border:1px solid var(--border-color);">見本Aa</span></td>
+      <td class="mono">${r.toFixed(2)}</td>
+      <td class="mono">≥ ${threshold}</td>
+      <td class="${ok ? 'pass' : 'fail'}">${ok ? '合格' : '不足'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderType() {
+  const meas = document.createElement('div');
+  document.body.appendChild(meas);
+  document.getElementById('type-rows').innerHTML = TYPE_VARS.map(v => {
+    meas.style.fontSize = `var(${v})`;
+    const px = getComputedStyle(meas).fontSize;
+    return `<div class="type-row">
+      <span class="type-label">${v} = ${cssVal(v)} (${px})</span>
+      <span style="font-size: var(${v}); line-height: 1.4;">図で語り、文字数を絞る 0123</span>
+    </div>`;
+  }).join('');
+  meas.remove();
+  document.getElementById('font-body-name').textContent = cssVal('--font-body');
+  document.getElementById('font-title-name').textContent = cssVal('--font-title');
+}
+
+function renderSpaces() {
+  const meas = document.createElement('div');
+  document.body.appendChild(meas);
+  document.getElementById('space-rows').innerHTML = SPACE_VARS.map(v => {
+    meas.style.width = `var(${v})`;
+    const px = getComputedStyle(meas).width;
+    return `<div class="scale-row">
+      <span class="lbl">${v} = ${cssVal(v)}</span>
+      <div class="bar" style="width: var(${v});"></div>
+      <span style="opacity:.6">${px}</span>
+    </div>`;
+  }).join('');
+  meas.remove();
+}
+
+function renderAll() {
+  renderSwatches();
+  renderContrast();
+  renderType();
+  renderSpaces();
+}
+
+const switcher = document.getElementById('switcher');
+CANDIDATES.forEach(({ file, label }, i) => {
+  const btn = document.createElement('button');
+  btn.textContent = label;
+  if (initialTheme ? file === initialTheme : i === 0) btn.classList.add('active');
+  btn.onclick = () => {
+    const link = document.getElementById('theme-link');
+    link.onload = () => { renderAll(); showCurrent(file); };
+    link.href = file;
+    document.getElementById('current-file').textContent = file;
+    switcher.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  };
+  switcher.appendChild(btn);
+  /* 実体のない候補のタブを消す。media=print で画面描画に影響させず読み込みだけ試す */
+  if (file !== 'theme.css') {
+    const probe = document.createElement('link');
+    probe.rel = 'stylesheet';
+    probe.media = 'print';
+    probe.onerror = () => { btn.remove(); probe.remove(); };
+    probe.onload = () => probe.remove();
+    probe.href = file;
+    document.head.appendChild(probe);
+  }
+});
+
+renderAll();
+if (!initialTheme) showCurrent('theme.css');
+/* Webフォント適用後に px 実測がずれないよう再描画 */
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(renderAll);
+</script>
+</body>
+</html>

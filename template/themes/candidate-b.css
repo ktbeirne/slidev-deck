@@ -1,0 +1,22 @@
+/* ===== 候補B: ティール基調 =====
+   狙い: 落ち着き・実務。運用/インフラ寄りの題材に合う。
+   注意: --accent-success が primary と同系統の緑になるため、図中で両者を並べる場合は
+   success の代わりに info/neutral を使うか、形状で区別する。 */
+:root {
+  --candidate-label: "ティール";
+  --brand-primary: #0F766E;      /* 主張色: 強調・アクセント */
+  --brand-primary-dark: #115E59; /* primary の濃色（縁取り・強い強調） */
+  --heading-color: #134E4A;      /* 見出し文字色 */
+  --text-color: #212A2E;         /* 本文基準色 */
+  --text-inverse: #FFFFFF;       /* 濃色背景上の文字色 */
+  --surface: #FFFFFF;            /* スライド背景 */
+  --surface-alt: #F2F6F5;        /* カード・パネル背景 */
+  --border-color: #D7DEDC;       /* 罫線 */
+  --accent-info: #2563EB;        /* 系統色: 情報 */
+  --accent-warn: #B45309;        /* 系統色: 注意 */
+  --accent-success: #15803D;     /* 系統色: 成功（primaryと近接。用法注意） */
+  --accent-neutral: #6B7280;     /* 系統色: 中立 */
+  --font-body: "Noto Sans JP", "Yu Gothic", "Meiryo", sans-serif;
+  --font-title: "BIZ UDPGothic", "Yu Gothic", "Meiryo", sans-serif;
+  --font-mono: "JetBrains Mono", Consolas, monospace;
+}

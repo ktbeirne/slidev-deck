@@ -1,0 +1,89 @@
+/* ===== 構造トークン（色は一切持たない。色は theme.css の役割） =====
+   theme.css とは独立に読み込む（specimen.html / Slidev 双方から <link> or import する）。 */
+:root {
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+
+  --radius-s: 4px;
+  --radius-m: 8px;
+  --radius-l: 12px;
+  --radius-pill: 999px; /* ピル形状（Badge等）。スケール外の意図的な固定値 */
+
+  --shadow-1: 0 1px 3px rgba(0, 0, 0, .12);
+  --shadow-2: 0 2px 8px rgba(0, 0, 0, .14);
+  --shadow-3: 0 6px 20px rgba(0, 0, 0, .18);
+
+  /* タイポグラフィスケール。1枚の声量は3段まで。主張 > 根拠 > 補足 */
+  --text-xs: 0.8rem;
+  --text-s: 1rem;
+  --text-m: 1.35rem;
+  --text-l: 1.7rem;
+  --text-xl: 2rem;
+  --text-display: 3rem;
+}
+
+/* ===== セマンティックユーティリティ（トークンの使い方を体現する最小セット） ===== */
+
+/* そのスライドの結論一文。1枚に1つまで。最も目立つ要素にする */
+.takeaway {
+  font-size: var(--text-l);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+/* 補足・注記の減衰。重要度の低い情報を視覚的に下げる */
+.dim {
+  opacity: 0.65;
+  font-size: 0.92em;
+}
+
+/* 重要語の強調。1ブロックに1-2語まで */
+.accent {
+  color: var(--brand-primary);
+  font-weight: 700;
+}
+
+/* カードプリミティブ */
+.card {
+  background: var(--surface-alt);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-1);
+  padding: var(--space-4);
+}
+
+/* 本文の標準サイズ */
+.sd-body { font-size: var(--text-m); line-height: 2; }
+
+/* リスト（UnoCSSリセットで list-style が消えるため明示的に復元する。
+   番号・点は内容が順序・区分を持つ場合のみ使う） */
+.sd-body ol {
+  list-style: decimal;
+  padding-left: var(--space-6);
+  margin: 0;
+}
+.sd-body ul {
+  list-style: disc;
+  padding-left: var(--space-6);
+  margin: 0;
+}
+.sd-body li { margin-top: var(--space-2); }
+
+/* 表（縦罫線なし。Tufte: data-ink比） */
+.sd-body table, table.sd-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95em;
+}
+.sd-body th, .sd-table th {
+  background: var(--surface-alt);
+  font-weight: 700;
+  text-align: left;
+}
+.sd-body th, .sd-body td, .sd-table th, .sd-table td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--border-color);
+}

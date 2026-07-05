@@ -1,0 +1,4 @@
+node_modules/
+slides-export/
+dist/
+*.log
